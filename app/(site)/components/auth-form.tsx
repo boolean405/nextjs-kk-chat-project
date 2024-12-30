@@ -1,8 +1,11 @@
 "use client";
 
+import axios from "axios";
+import toast from "react-hot-toast";
 import { useCallback, useState } from "react";
+import { signIn } from "next-auth/react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { BsFacebook, BsGoogle } from "react-icons/bs";
+import { BsFacebook, BsGithub, BsGoogle } from "react-icons/bs";
 
 import Input from "@/app/components/inputs/input";
 import Button from "@/app/components/button";
@@ -39,18 +42,54 @@ const AuthForm = () => {
     setIsLoading(true);
 
     if (variant === "signup") {
-      // signup logic
-      console.log(data);
+      axios
+        .post("/api/sign-up", data)
+        .then(() => toast.success("Sign up successful"))
+        .catch(() => {
+          
+          if (!data.name) {
+            toast.error("Invalid name");
+          } else if (!data.email) {
+            toast.error("Invalid email");
+          } else if (!data.password) {
+            toast.error("Invalid password");
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
+
     if (variant === "signin") {
-      // signin logic
+      signIn("credentials", {
+        ...data,
+        redirect: false,
+      })
+        .then((callback) => {
+          if (callback?.error) {
+            toast.error(callback.error);
+          }
+
+          if (callback?.ok && !callback.error) {
+            toast.success("Sign in successful");
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   };
 
   const socialAction = (action: string) => {
-    // social login logic
     setIsLoading(true);
-    console.log(action);
+
+    signIn(action, { redirect: false })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error(callback.error);
+        }
+
+        if (callback?.ok && !callback.error) {
+          toast.success("Sign in successful");
+        }
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -107,6 +146,10 @@ const AuthForm = () => {
             <AuthSocialButton
               icon={BsFacebook}
               onClick={() => socialAction("facebook")}
+            />
+            <AuthSocialButton
+              icon={BsGithub}
+              onClick={() => socialAction("github")}
             />
           </div>
         </div>
