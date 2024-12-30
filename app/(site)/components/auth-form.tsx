@@ -2,10 +2,11 @@
 
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useCallback, useState } from "react";
-import { signIn } from "next-auth/react";
+import { useCallback, useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { BsFacebook, BsGithub, BsGoogle } from "react-icons/bs";
+import { useRouter } from "next/navigation";
 
 import Input from "@/app/components/inputs/input";
 import Button from "@/app/components/button";
@@ -15,8 +16,17 @@ import AuthSocialButton from "./auth-social-button";
 type Variant = "signin" | "signup";
 
 const AuthForm = () => {
+  const session = useSession();
+  const router = useRouter();
+
   const [variant, setVariant] = useState<Variant>("signin");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      router.push("/users");
+    }
+  }, [session?.status, router]);
 
   const toggleVariant = useCallback(() => {
     if (variant === "signin") {
@@ -44,9 +54,11 @@ const AuthForm = () => {
     if (variant === "signup") {
       axios
         .post("/api/sign-up", data)
-        .then(() => toast.success("Sign up successful"))
+        .then(() => {
+          signIn("credentials", data);
+          toast.success("Sign up successful");
+        })
         .catch(() => {
-          
           if (!data.name) {
             toast.error("Invalid name");
           } else if (!data.email) {
