@@ -17,7 +17,7 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
         {user?.image ? (
           <Image src={user?.image} fill objectFit="cover" alt="User avatar" />
         ) : (
-          <FaUserCircle className="w-full h-full" />
+          <FaUserCircle className="w-full h-full text-gray-600" />
         )}
       </div>
       <span className="absolute block rounded-full bg-green-500 ring-2 ring-white top-0 right-0 h-2 w-2 md:h-3 md:w-3"></span>
