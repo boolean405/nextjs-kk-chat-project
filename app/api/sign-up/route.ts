@@ -61,7 +61,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.log("[SIGN_UP_POST]", error.message);
     return NextResponse.json(
-      { con: false, msg: "Internal error" },
+      { con: false, msg: "Sign up post error" },
       { status: 500 }
     );
   }
