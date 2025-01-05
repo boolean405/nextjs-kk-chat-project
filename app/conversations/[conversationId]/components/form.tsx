@@ -46,7 +46,7 @@ const Form = () => {
           showPoweredBy: false,
         }}
         onSuccess={handleUpload}
-        uploadPreset="kk-chat"
+        uploadPreset="kk-chat-chat"
       >
         <HiPhoto size={25} className="text-sky-500" />
       </CldUploadButton>
